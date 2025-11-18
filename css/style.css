@@ -1,0 +1,157 @@
+/* Custom styles for the FCC homepage */
+.topbar-top {
+    background-color: #E5B80B;
+    color: #fff;
+}
+
+.topbar a {
+    color: #fff;
+}
+
+#logo {
+    width: 130px;
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    color: #E5B80B;
+}
+
+.carousel-caption {
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-title{
+	color:#e5b80b;
+}
+.card img {
+    border-bottom: 5px solid #E5B80B;
+}
+
+.back-to-top {
+    background-color: #E5B80B;
+    border: none;
+}
+
+#eimg{
+    width: 60px;
+}
+/*** Topbar Start ***/
+
+.search-btn {
+    position: relative;
+    width: 100%;
+    padding: 0 0 0 25px;
+}
+
+.search-btn .form-group {
+    width: 100%;
+}
+
+.search-btn button {
+    position: absolute;
+    right: 25px;
+}
+
+@media (max-width: 992px) {
+    .search-btn {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        flex-direction: column;
+    }
+    .search-btn {
+        display: none;
+    }
+    .topbar-info {
+        flex-direction: column;
+    }
+    .topbar-info a {
+        padding: 0 0 10px 0;
+    }
+    .topbar-icon {
+        padding: 0 0 10px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .topbar-top {
+        display: none;
+    }
+}
+
+/*** Topbar End ***/
+
+/*** Navbar Start ***/
+.navbar .navbar-nav {
+    padding: 15px 0;
+}
+
+.navbar .navbar-nav .nav-link {
+    padding: 11px 15px;
+    color: #040404;
+    font-weight: 500;
+    font-size: 16px;
+    outline: none;
+    transition: .5s;
+}
+
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link.active  {
+    color: #f50303;
+    transition: .5s;
+}
+
+.navbar .dropdown-toggle::after {
+    border: none;
+    content: "\f107";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 800;
+    vertical-align: middle;
+    margin-left: 8px;
+}
+
+@media (min-width: 992px) {
+    .navbar .nav-item .dropdown-menu {
+        display: block;
+        visibility: hidden;
+        top: 100%;
+        transform: rotateX(-75deg);
+        transform-origin: 0% 0%;
+        transition: .5s;
+        opacity: 0;
+    }
+}
+
+.dropdown .dropdown-menu a:hover, 
+.dropdown .dropdown-menu a.active {
+    color: var(--bs-dark);
+    background-color: var(--bs-primary);
+}
+
+.navbar .nav-item:hover .dropdown-menu {
+    transform: rotateX(0deg);
+    visibility: visible;
+    transition: .5s;
+    opacity: 1;
+}
+
+.navbar-toggler {
+    background: var(--bs-secondary);
+    color: var(--bs-light) !important;
+    padding: 5px 12px;
+    border: 2px solid var(--bs-primary) !important;
+}
+
+/*** Navbar End ***/
+
