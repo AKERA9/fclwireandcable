@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCL Wire & Cable</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --header-height-desktop: 155px;
+            --header-height-mobile: 100px;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 150px;
+            background-color: #f4f4f4;
+        }
+        .site-header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: #ffffff; z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 100px;
+        }
+        .logo { font-weight: bold; font-size: 24px; letter-spacing: 2px; }
+        .search-container {
+            position: relative;
+			flex-grow: 1;
+			margin: 0 18px;
+			display: flex;
+			background-color: #f2f2f2;
+			right: 3px;
+        }
+        #search-input {
+            flex-grow: 1;
+            padding: 11px 15px;
+            border: none;
+            background-color: transparent;
+            outline: none;
+        }
+        #search-button {
+            background: transparent;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+            color: #555;
+            font-size: 16px;
+        }
+        #search-results {
+            display: none; position: absolute; top: 110%; left: 0; width: 100%;
+            background-color: white; border: 1px solid #ddd; border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-height: 300px; overflow-y: auto;
+            z-index: 1001;
+        }
+        .suggestion-item {
+            display: block;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background-color: #f5f5f5;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .suggestion-item mark {
+            background-color: #ffe082;
+            font-weight: bold;
+        }
+        .highlight-scroll {
+            transition: background-color 0.3s ease-in-out;
+            background-color: #fffde7 !important;
+            border-radius: 5px;
+        }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .header-actions i { font-size: 14px; cursor: pointer; }
+        .claim-button { background-color: #E31E24;color: #fff;padding: 10px 40px;border:1px solid #e31e24; }
+        .claim-button:hover { background-color: white;color: #e31e24;padding: 10px 40px;border:1px solid #e31e24; }
+        .main-nav {
+            display: flex; justify-content: center; align-items: center;
+            padding: 0 30px;
+        }
+        .main-nav ul { list-style: none; margin: 0; padding: 0; white-space: nowrap; font-size: .875rem; letter-spacing: 2.1px; line-height: 1.25rem; display: flex ; font-family: sans-serif;}
+        .main-nav ul li { position: relative; }
+        .main-nav ul li > a.nav-link {
+            display: block; padding: 15px 30px; text-decoration: none;
+            color: #333333bf; font-weight: bold; font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        .main-nav ul li:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            height: 16px; 
+            width: 1px;
+            background-color: #eee;
+        }
+
+		.scrolling-bar {
+		  background-color: #e31e24;
+		  padding: 5px 0px 5px 0px;
+		  overflow: hidden;
+		  font-weight:bold;
+		  white-space: nowrap;
+		  text-transform: uppercase;
+		  font-family: Arial, sans-serif;
+		}		
+        .main-nav ul li a.highlight, .main-nav ul li a.sale { color: #e31e24; font-weight: bold; }
+		
+        .main-nav ul li:hover > a.nav-link {
+            color: #E31E24;
+        }
+		.mega-menu {
+			display: block;
+			opacity: 0;
+			visibility: hidden;
+			transform: translateY(10px);
+			transition: all 0.3s ease;
+			position: absolute;
+			top: calc(100% - 1px);
+			right: 0;
+			left: auto;
+			width: min-content;
+			background-color: white;
+			padding: 15px 12px;
+			box-sizing: border-box;
+			box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+			z-index: 999;
+			pointer-events: none; /* Prevent accidental hover before animation ends */
+		}
+		.main-nav ul li.has-children:hover .mega-menu {
+			opacity: 1;
+			visibility: visible;
+			transform: translateY(0);
+			pointer-events: auto;
+		}
+		.mega-menu-content {
+			display: block; /* Change from grid to block for simple column*/
+		}
+
+		.mega-menu-column h3 {
+			font-size: 14px;
+			margin-top: 0;
+			text-transform: uppercase;
+			margin-bottom: 10px;
+		}
+
+		.mega-menu-column ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: block;
+		}
+
+		.mega-menu-column ul li a {
+			border-bottom: none;
+			padding: 8px 0;
+			letter-spacing: normal;
+			font-size: initial;
+			color: #555;
+			text-decoration: none;
+			line-height: 1.5;
+			display: block;
+		}
+		.mega-menu-column ul li a:hover {
+			border-bottom: none;
+			padding: 8px 0;
+			letter-spacing: normal;
+			font-size: initial;
+			color: black;
+			text-decoration: none;
+			line-height: 1.5;
+			display: block;
+		}	
+        .ticker-bar { background-color: #E31E24;color: #fff;text-align: center;font-size: 13px; }
+        
+        /* Mobile Specific Styles */
+        .main-nav-mobile, .mobile-header, .menu-overlay, .dropdown-toggle, .close-menu-btn, .sub-menu {
+            display: none;
+        }
+            #mobile-search-container {
+                display:none;
+            }
+			
+        /* Media Query for screens up to 1330px and greater than 1000px */
+        @media (max-width: 1330px) and (min-width: 1001px) {
+            .header-top {
+                padding: 15px 50px; 
+            }
+            .main-nav {
+                padding: 0 15px; 
+            }
+            .main-nav ul li > a.nav-link {
+                font-size: 13.5px; /* Slightly reduced font size*/
+                padding: 15px 20px; 
+            }
+            .claim-button {
+                padding: 10px 30px; 
+                font-size: 13px; 
+            }
+        }
+        /* Media Query for screens up to 1200px and greater than 1000px */
+        @media (max-width: 1200px) and (min-width: 1001px) {
+            .header-top {
+                padding: 15px 30px; 
+            }
+            .main-nav {
+                padding: 0 10px; 
+            }
+            .main-nav ul li > a.nav-link {
+                font-size: 13px; 
+                padding: 15px 18px; 
+            }
+            .claim-button {
+                padding: 10px 25px; 
+                font-size: 12.5px; 
+            }
+        }
+        /* Media Query for screens up to 1000px and greater than 800px */
+        @media (max-width: 1000px) and (min-width: 801px) {
+            .header-top {
+                padding: 15px 20px; 
+            }
+            .main-nav {
+                padding: 0 5px; 
+            }
+            .main-nav ul li > a.nav-link {
+                font-size: 12px; 
+                padding: 15px 10px; 
+                letter-spacing: 1.5px;
+            }
+            .header-actions {
+                gap: 10px;
+            }
+            .claim-button {
+                padding: 8px 15px; 
+                font-size: 12px; 
+            }
+            .about, .user {
+                padding: 8px 12px;
+            }
+        }
+
+        /* Media Query for screens up to 800px and greater than 752px */
+        @media (max-width: 800px) and (min-width: 753px) {
+            .header-top {
+                padding: 15px 10px; 
+            }
+            .main-nav {
+                padding: 0 0px; 
+            }
+            .main-nav ul li > a.nav-link {
+                font-size: 11px; 
+                padding: 15px 8px; 
+                letter-spacing: 1px;
+            }
+            .header-actions {
+                gap: 5px;
+            }
+            .claim-button {
+                padding: 6px 10px; 
+                font-size: 11px; 
+            }
+            .about, .user {
+                padding: 6px 10px;
+            }
+            .logo img {
+                width: 80px; /* Make logo slightly smaller */
+            }
+        }
+
+
+        @media (max-width: 752px) {
+            body { padding-top: var(--header-height-mobile); }
+            .header-top, .main-nav { display: none; }
+
+            .mobile-header {
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center;
+                padding: 15px; 
+                height: 60px;
+                position: relative;
+                z-index: 100;
+            }
+            .mobile-header .logo { font-size: 20px; } 
+            .mobile-header .left-icons { display: flex; align-items: center; gap: 15px; }
+            .mobile-header .left-icons i { font-size: 24px; }
+            .mobile-header .right-button { display: flex; align-items: center; }
+            .mobile-header .get-app-btn { background-color: #f0f8ff00;
+            color: #fff;
+            padding: 5px 10px;
+            font-weight: bold;
+            border: none; }
+
+            #mobile-search-container {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #ffffff;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                padding: 0 15px;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+                z-index: 90;
+            }
+            .scrolling-bar{
+                background-color: #e31e24;
+                padding: 3px 0px 3px 0px;
+                overflow: hidden;
+                font-weight: bold;
+                white-space: nowrap;
+                text-transform: uppercase;
+                font-family: Arial, sans-serif;
+            }
+
+            #mobile-search-container.active {
+                max-height: 250px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                overflow: visible;
+            }
+
+            #mobile-search-input {
+                width: 100%;
+                padding: 8px 10px;
+                border:none;
+                border-radius: 5px;
+                outline: none;
+                margin-bottom: 5px;
+            }
+
+            #mobile-search-results {
+                position: relative;
+                top: auto;
+                left: auto;
+                width: 100%;
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                max-height: 150px;
+                overflow-y: auto;
+                z-index: 1002;
+            }
+
+            .main-nav-mobile {
+                display: block; position: fixed; top: 0; left: -100%;
+                width: 80%; height: 100%; background: white;
+                overflow-y: auto; transition: left 0.4s ease;
+                padding: 20px; box-sizing: border-box; z-index: 1001;
+            }
+            .main-nav-mobile.mobile-active { left: 0; }
+            .main-nav-mobile ul { list-style: none; margin: 0; padding: 0; }
+            .main-nav-mobile ul li { border-bottom: 1px solid #eee; }
+            .main-nav-mobile ul li .menu-item-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+            .main-nav-mobile ul li a { text-decoration: none; color: #333; display: block; padding: 15px; }
+            .dropdown-toggle { display: block; cursor: pointer; padding: 15px; font-size: 18px; }
+            .sub-menu { display: block; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; list-style: none; padding-left: 20px; background: #f9f9f9; }
+            .sub-menu.open { max-height: 500px; }
+            .sub-menu a { font-size: 14px !important; font-weight: normal !important; }
+            .menu-overlay.active { display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+            .close-menu-btn { display: block; position: absolute; top: 10px; right: 15px; font-size: 28px; background: none; border: none; }
+        }
+        .about, .user{
+            border:1px solid grey;
+            padding:10px 16px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <header class="site-header">
+        <div class="header-top">
+            <div class="logo"><a href="index.html"><img src="img/logo.png" style="width:95px;"/></a></div>
+            <div class="search-container" id="desktop-search-container">
+                <input type="text" id="search-input" placeholder="SEARCH WHAT YOU NEED..."/>
+                <div id="search-results"></div>
+            </div>
+            <div class="header-actions">
+                <div class="about"><img src="img/india.jpg" style="width: 14px;margin-right: 4px;margin-top: -3px;"/>INR <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="about"><i class="fa-regular fa-clock"></i></div>
+                <div class="user"><i class="fa-regular fa-user"></i></div>
+                <button class="claim-button cart">SELCTED CART ITEM <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+        </div>
+        <nav class="main-nav" id="desktop-main-nav">
+            <ul>
+                <li><a href="#" class="nav-link highlight">WHAT'S NEW</a></li>
+                <li><a href="#" class="nav-link">AMBASSADOR</a></li>
+                <li><a href="#" class="nav-link">CAREER</a></li>
+                <li><a href="Comparison.html" class="nav-link">COMPARISON</a></li>
+                <li><a href="partner.html" class="nav-link">BECAME A PARTNER</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="hot.html" class="nav-link">🔥 250<span style="position:relative;bottom:8px;font-size:12px;">o</span>C</a></li>
+                <li><a href="blogs.html" class="nav-link">BLOGS</a></li>
+                <li class="has-children"><a href="#" class="nav-link sale">MORE</a>
+				    <div class="mega-menu">
+                        <div class="mega-menu-content">
+                            <div class="mega-menu-column">
+								<ul><li><a href="quiz.html">Quiz</a></li>
+									<li><a href="policy.html">Posh Policies</a></li>
+									<li><a href="#">Compare Wire</a></li>
+								</ul>
+							</div>
+                        </div>
+                    </div>
+				</li>
+            </ul>
+        </nav>
+        
+        <div class="mobile-header">
+            <div class="left-icons">
+                <img src="img/menu.png"  id="hamburger-menu" style="width: 25px;"/>
+                <img src="img/search.png" id="mobile-search-icon" style="width: 23px;"/>
+            </div>
+            <div class="logo"><a href="index.php"><img src="img/logo.png" style="width:97px;"></a></div>
+            <div class="right-button"><button class="get-app-btn claim-button"><img src="img/sup.png" style="width: 30px;"/></div>
+        </div>
+        <div class="search-container" id="mobile-search-container">
+            <input type="text" id="mobile-search-input" placeholder="SEARCH WHAT YOU NEED..."/>
+            <div id="mobile-search-results"></div>
+        </div>
+        
+        <nav class="main-nav-mobile" id="main-nav-menu">
+            <button class="close-menu-btn" id="close-btn">&times;</button>
+            <ul id="mobile-menu-list">
+                </ul>
+        </nav>
+
+        <div class="ticker-bar">
+		<div class="scrolling-bar">
+  <div class="scrolling-track">
+    <span>#1 SHORT CIRCUIT PROOF WIRES</span>
+    <span>99.97% PURE COPPER</span>
+    <span>REGISTERED DESIGN PACKAGING</span>
+    <span>FIRE PROTECTION UP TO 250<span style="position: relative; top: 2px;padding: 2px;">°</span> C</span>
+    <span>PATENTED TECHNOLOGY</span>
+    <span>#1 SHORT CIRCUIT PROOF WIRES</span>
+    <span>99.97% PURE COPPER</span>
+    <span>REGISTERED DESIGN PACKAGING</span>
+    <span>FIRE PROTECTION UP TO 250<span style="position: relative; top: 2px;padding: 2px;">°</span> C</span>
+    <span>PATENTED TECHNOLOGY</span>
+    <span>#1 SHORT CIRCUIT PROOF WIRES</span>
+    <span>99.97% PURE COPPER</span>
+    <span>REGISTERED DESIGN PACKAGING</span>
+    <span>FIRE PROTECTION UP TO 250<span style="position: relative; top: 2px;padding: 2px;">°</span> C</span>
+    <span>PATENTED TECHNOLOGY</span>
+  </div>
+</div>
+
+<style>
+
+.scrolling-track {
+  display: inline-block;
+  animation: scroll-left 50s linear infinite;
+}
+
+.scrolling-track span {
+display: inline-block;
+    color: white;
+    font-size: 12px;
+    padding: 0 13px;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+</style>
+</div>
+    </header>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Mobile Menu Functionality ---
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const mainNavMenu = document.getElementById('main-nav-menu');
+            const closeBtn = document.getElementById('close-btn');
+            const overlay = document.getElementById('menu-overlay');
+            const mobileMenuList = document.getElementById('mobile-menu-list');
+            const desktopMainNav = document.getElementById('desktop-main-nav');
+
+            function openMenu() { mainNavMenu.classList.add('mobile-active'); overlay.classList.add('active'); }
+            function closeMenu() { mainNavMenu.classList.remove('mobile-active'); overlay.classList.remove('active'); }
+            
+            if(hamburgerMenu) hamburgerMenu.addEventListener('click', openMenu);
+            if(closeBtn) closeBtn.addEventListener('click', closeMenu);
+            if(overlay) overlay.addEventListener('click', closeMenu);
+
+            // Function to dynamically create mobile menu content from desktop menu
+            function createMobileMenuContent() {
+                mobileMenuList.innerHTML = ''; // Clear existing mobile menu
+                
+                // Clone all top-level list items from the desktop menu
+                desktopMainNav.querySelectorAll('ul > li').forEach(desktopLi => {
+                    const mobileLi = document.createElement('li');
+                    
+                    // Clone the link directly
+                    const desktopLink = desktopLi.querySelector('.nav-link');
+                    if (desktopLink) {
+                        const menuWrapper = document.createElement('div');
+                        menuWrapper.className = 'menu-item-wrapper';
+                        
+                        const linkClone = desktopLink.cloneNode(true);
+                        menuWrapper.appendChild(linkClone);
+                        mobileLi.appendChild(menuWrapper);
+                    }
+
+                    // Handle has-children / mega-menu for mobile
+                    if (desktopLi.classList.contains('has-children')) {
+                        const dropdownToggle = document.createElement('span');
+                        dropdownToggle.className = 'dropdown-toggle';
+                        dropdownToggle.textContent = '+';
+                        mobileLi.querySelector('.menu-item-wrapper').appendChild(dropdownToggle);
+
+                        const subMenu = document.createElement('ul');
+                        subMenu.className = 'sub-menu';
+
+                        const megaMenuContent = desktopLi.querySelector('.mega-menu-content');
+                        if (megaMenuContent) {
+                            // Loop through each column in the mega-menu
+                            megaMenuContent.querySelectorAll('.mega-menu-column').forEach(column => {
+                                column.querySelectorAll('ul li a').forEach(itemLink => {
+                                    const subMenuItem = document.createElement('li');
+                                    const link = itemLink.cloneNode(true);
+                                    link.removeAttribute('style'); // Remove inline styles if any
+                                    subMenuItem.appendChild(link);
+                                    subMenu.appendChild(subMenuItem);
+                                });
+                            });
+                        }
+                        mobileLi.appendChild(subMenu);
+                    }
+                    mobileMenuList.appendChild(mobileLi);
+                });
+
+                // Attach dropdown toggle listeners to newly created elements
+                attachDropdownListeners();
+            }
+
+            function attachDropdownListeners() {
+                const dropdownToggles = document.querySelectorAll('#mobile-menu-list .dropdown-toggle');
+                dropdownToggles.forEach(toggle => {
+                    toggle.removeEventListener('click', toggleDropdown); // Prevent duplicate listeners
+                    toggle.addEventListener('click', toggleDropdown);
+                });
+            }
+
+            function toggleDropdown() {
+                const subMenu = this.parentElement.nextElementSibling;
+                if (subMenu) {
+                    subMenu.classList.toggle('open');
+                    this.textContent = subMenu.classList.contains('open') ? '−' : '+';
+                }
+            }
+
+            // --- Mobile Search Functionality ---
+            const mobileSearchIcon = document.getElementById('mobile-search-icon');
+            const mobileSearchContainer = document.getElementById('mobile-search-container');
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            const mobileSearchResults = document.getElementById('mobile-search-results');
+
+            if (mobileSearchIcon) {
+                mobileSearchIcon.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent document click from immediately closing it
+                    mobileSearchContainer.classList.toggle('active');
+                    if (mobileSearchContainer.classList.contains('active')) {
+                        mobileSearchInput.focus();
+                    } else {
+                        mobileSearchResults.style.display = 'none';
+                        mobileSearchInput.value = '';
+                    }
+                });
+            }
+
+            // --- Search Logic (Find and Suggest from Page Content) ---
+            const searchInputDesktop = document.getElementById('search-input');
+            const searchResultsDesktop = document.getElementById('search-results');
+            const pageContentElements = document.querySelector('body');
+            let pageContent = [];
+
+            function indexPage() {
+                pageContent = [];
+                pageContentElements.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, a, span, div, button').forEach(element => {
+                    if (element.textContent && element.textContent.trim().length > 0 && element.offsetParent !== null) {
+                        pageContent.push({
+                            text: element.textContent,
+                            element: element
+                        });
+                    }
+                });
+            }
+
+            function setupSearch(inputElement, resultsElement) {
+                if (inputElement) {
+                    inputElement.addEventListener('input', function() {
+                        const query = this.value.trim().toLowerCase();
+                        resultsElement.innerHTML = '';
+
+                        if (query.length < 3) {
+                            resultsElement.style.display = 'none';
+                            return;
+                        }
+
+                        const uniqueMatches = new Set();
+                        const maxSuggestions = 10;
+                        let currentSuggestions = 0;
+
+                        pageContent.forEach(item => {
+                            if (currentSuggestions >= maxSuggestions) return;
+
+                            const fullText = item.text;
+                            const lowerCaseFullText = fullText.toLowerCase();
+                            let startIndex = lowerCaseFullText.indexOf(query);
+
+                            while (startIndex !== -1 && currentSuggestions < maxSuggestions) {
+                                const beforeLength = 30;
+                                const afterLength = 50;
+
+                                let startSnippet = Math.max(0, startIndex - beforeLength);
+                                let endSnippet = Math.min(fullText.length, startIndex + query.length + afterLength);
+
+                                let snippet = fullText.substring(startSnippet, endSnippet);
+
+                                if (startSnippet > 0) {
+                                    snippet = '...' + snippet;
+                                }
+                                if (endSnippet < fullText.length) {
+                                    snippet = snippet + '...';
+                                }
+                                
+                                const highlightedSnippet = snippet.replace(new RegExp(query, 'gi'), '<mark>$&</mark>');
+
+                                if (!uniqueMatches.has(highlightedSnippet)) {
+                                    uniqueMatches.add(highlightedSnippet);
+
+                                    const suggestionElement = document.createElement('a');
+                                    suggestionElement.className = 'suggestion-item';
+                                    suggestionElement.innerHTML = highlightedSnippet;
+                                    
+                                    suggestionElement.addEventListener('click', function() {
+                                        scrollToElement(item.element);
+                                        resultsElement.style.display = 'none';
+                                        inputElement.value = '';
+                                    });
+                                    
+                                    resultsElement.appendChild(suggestionElement);
+                                    currentSuggestions++;
+                                }
+                                
+                                startIndex = lowerCaseFullText.indexOf(query, startIndex + query.length);
+                            }
+                        });
+
+                        if (resultsElement.children.length > 0) {
+                            resultsElement.style.display = 'block';
+                        } else {
+                            resultsElement.style.display = 'none';
+                        }
+                    });
+                }
+            }
+            
+            function scrollToElement(element) {
+                const headerHeight = document.querySelector('.site-header').offsetHeight;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = window.pageYOffset + elementPosition - headerHeight - 20;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+
+                element.classList.add('highlight-scroll');
+                setTimeout(() => {
+                    element.classList.remove('highlight-scroll');
+                }, 2500);
+            }
+
+            document.addEventListener('click', function(e) {
+                // Handle clicks outside desktop search
+                const desktopSearchContainer = document.getElementById('desktop-search-container');
+                if (desktopSearchContainer && !e.target.closest('#desktop-search-container')) {
+                    searchResultsDesktop.style.display = 'none';
+                }
+
+                // Handle clicks outside mobile search
+                if (mobileSearchContainer && !e.target.closest('#mobile-search-container') && !e.target.closest('#mobile-search-icon')) {
+                    if (mobileSearchContainer.classList.contains('active')) {
+                        mobileSearchContainer.classList.remove('active');
+                        mobileSearchResults.style.display = 'none';
+                        mobileSearchInput.value = '';
+                    }
+                }
+            });
+
+            // Initialize functions
+            createMobileMenuContent(); // Build mobile menu on load
+            indexPage(); // Index page content for search
+            setupSearch(searchInputDesktop, searchResultsDesktop); // Setup desktop search
+            setupSearch(mobileSearchInput, mobileSearchResults); // Setup mobile search - THIS LINE WAS MISSING/COMMENTED OUT
+            // Rebuild mobile menu on resize if layout changes significantly
+            window.addEventListener('resize', () => {
+                if (window.innerWidth <= 752) {
+                    createMobileMenuContent();
+                }
+            });
+        });
+    </script>
+<style>
+
+        /* Quiz Container - This should be placed below your menu.php output */
+        .quiz-container {
+            padding: 10px 30px;
+            border-radius: 10px;
+            max-width: 900px; /* Slightly wider for better layout */
+            width: 100%;
+			color:black;
+            margin: 40px auto; /* Centered with some top/bottom margin */
+            text-align: center;
+            box-sizing: border-box;
+            overflow: hidden; /* Clear floats / prevent content overflow */
+            position: relative; /* For animations if added */
+        }
+
+        /* Hidden Class for Steps */
+        .quiz-step {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .quiz-step.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Headings */
+        h1 {
+            font-size: 3.8em;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #DC143C; /* FCL Red */
+            font-size: 2.2em;
+            margin-bottom: 35px;
+            font-weight: 600;
+        }
+
+        h3 {
+             color: #333;
+             font-size: 1.8em;
+             margin-bottom: 15px;
+             font-weight: 600;
+        }
+
+
+        /* Paragraphs */
+        p {
+            font-size: 1.15em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        /* Buttons */
+        .button{
+			display: inline-block;
+			padding: 15px 35px;
+			font-size: 1.0em;
+			font-weight: bold;
+			color: #ffffff;
+			background-color: #e31e24;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			text-decoration: none;
+			transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+			letter-spacing: 0.5px;
+		}
+
+        .button:hover {
+            background-color: #A00F2B; /* Darker Red on hover */
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Quiz Step 1 - Image (if retained) */
+        .step1-image-container {
+            margin-top: 40px;
+            margin-bottom: 40px;
+            max-height: 300px; /* Constrain image height */
+            overflow: hidden; /* Hide overflow */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .step1-image {
+				width: 60%;
+				height: auto;
+				display: block;
+				margin: auto;
+				border-radius: 10px;
+			}
+
+        /* Radio Button Options (Questions) */
+        .radio-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+            gap: 20px;
+            margin-bottom: 45px;
+            justify-content: center; /* Center items in grid */
+        }
+
+        .radio-option-label {
+            display: flex; /* Use flexbox for alignment */
+            align-items: center; /* Vertically align text and input */
+            justify-content: center; /* Center content horizontally */
+            background-color: #fff;
+            border: 2px solid #DAA520; /* Golden border */
+            border-radius: 30px; /* More rounded */
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 1.15em;
+            color: #333;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            font-weight: 500;
+        }
+
+        .radio-option-label:hover {
+            background-color: #FFFCE0; /* Very light golden hover */
+            border-color: #B8860B; /* Darker Golden on hover */
+            transform: translateY(-2px);
+        }
+
+        .radio-option-label input[type="radio"] {
+            display: none; /* Hide default radio button */
+        }
+
+        .radio-option-label input[type="radio"]:checked + span {
+            background-color: #DC143C; /* FCL Red when checked */
+            color: #ffffff;
+            border-color: #DC143C;
+            padding: 15px 25px; /* Keep padding consistent */
+            border-radius: 30px; /* Keep border-radius consistent */
+            display: block; /* Ensure it takes full space */
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); /* Inner shadow for checked state */
+        }
+
+        /* For the text inside the custom radio button */
+        .radio-option-label span {
+            display: block;
+            flex-grow: 1; /* Allow text to take available space */
+            text-align: center; /* Center text */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-radius: 30px; /* Ensure rounded corners on span */
+        }
+
+
+        /* Next Button (Step 2 & 3) */
+        .next-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            color: #DC143C; /* FCL Red */
+            font-size: 1.25em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        .next-button:hover {
+            color: #A00F2B; /* Darker Red on hover */
+            transform: translateX(5px);
+        }
+
+        .next-button .arrow {
+            font-size: 1.8em;
+            line-height: 1; /* Align arrow vertically */
+        }
+
+        /* Quiz Step 3 - Results */
+        .results-section {
+            padding-top: 20px;
+        }
+
+        .bonus-tip {
+            background-color: #FFD700; /* Golden for bonus tip */
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 1.4em;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .bonus-tip span {
+            color: #DC143C; /* Red for the "Bonus Tip!" text */
+            margin-right: 10px;
+        }
+
+        .recommendation-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            background-color: #fefefe;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .recommendation-image {
+            max-width: 90%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-text {
+            font-size: 1.2em;
+            color: #444;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            text-align: left; /* Align text left within its container */
+            max-width: 700px;
+        }
+
+        .contact-button {
+            background-color: #DAA520; /* Golden for contact button */
+            color: #ffffff;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .contact-button:hover {
+            background-color: #B8860B; /* Darker Golden */
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer / Disclaimer */
+        .quiz-footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 30px 20px;
+                margin: 20px auto;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            h2 {
+                font-size: 1.8em;
+            }
+            .button, .contact-button {
+                padding: 12px 25px;
+                font-size: 1.1em;
+            }
+            .radio-options {
+                grid-template-columns: 1fr; /* Stack options on smaller screens */
+                gap: 15px;
+            }
+            .radio-option-label {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+            .bonus-tip {
+                font-size: 1.2em;
+                padding: 12px 20px;
+            }
+            .recommendation-image {
+                max-width: 95%;
+            }
+            .recommendation-text {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+
+    <div class="quiz-container">
+
+        <div id="step1" class="quiz-step active">
+            <h1>Ready to Find Your Perfect Wire Match?</h1>
+            <p>Answer a few quick questions to get personalized wiring recommendations for your home or project!</p>
+                <img src="img/p212.png" alt="FCL Wires and Cables" class="step1-image"><br>
+            <button class="button" onclick="nextStep(2)">LET'S PLAY!</button>
+        </div>
+
+        <div id="step2" class="quiz-step">
+            <h2>Question 1: What type of building are you wiring?</h2>
+            <div class="radio-options">
+                <label class="radio-option-label">
+                    <input type="radio" name="buildingType" value="residential">
+                    <span>Residential Home</span>
+                </label>
+                <label class="radio-option-label">
+                    <input type="radio" name="buildingType" value="commercial">
+                    <span>Commercial Space (Office/Shop)</span>
+                </label>
+                <label class="radio-option-label">
+                    <input type="radio" name="buildingType" value="industrial">
+                    <span>Industrial Facility</span>
+                </label>
+                <label class="radio-option-label">
+                    <input type="radio" name="buildingType" value="others">
+                    <span>Other / Not Sure Yet</span>
+                </label>
+            </div>
+            <button class="next-button" onclick="nextStep(3)">
+                NEXT <span class="arrow">&rarr;</span>
+            </button>
+        </div>
+
+        <div id="step3" class="quiz-step">
+            <h2>Question 2: What is your primary concern for your wiring project?</h2>
+            <div class="radio-options">
+                <label class="radio-option-label">
+                    <input type="radio" name="concern" value="safety_durability">
+                    <span>Safety & Long-term Durability</span>
+                </label>
+                <label class="radio-option-label">
+                    <input type="radio" name="concern" value="energy_efficiency">
+                    <span>Energy Efficiency & Savings</span>
+                </label>
+                <label class="radio-option-label">
+                    <input type="radio" name="concern" value="cost_effectiveness">
+                    <span>Cost-Effectiveness & Budget</span>
+                </label>
+                <label class="radio-option-label">
+                    <input type="radio" name="concern" value="future_proofing">
+                    <span>Future-proofing & Smart Home Ready</span>
+                </label>
+            </div>
+            <button class="next-button" onclick="nextStep(4)">
+                GET MY RECOMMENDATION <span class="arrow">&rarr;</span>
+            </button>
+        </div>
+
+        <div id="step4" class="quiz-step results-section">
+            <p style="font-size: 1.4em; color: #DC143C; font-weight: bold; margin-bottom: 15px;">CONGRATULATIONS!</p>
+            <h2>Your FCL Wiring Recommendation Is Here!</h2>
+            <div class="bonus-tip">
+                <span>⚡️ Bonus Tip!</span> Get Expert Advice Directly From FCL!
+            </div>
+
+            <div class="recommendation-content">
+                <img src="https://via.placeholder.com/600x350/DC143C/FFFFFF?text=FCL+Housing+Wire+Recommendation" alt="FCL Housing Wire" class="recommendation-image">
+
+                <h3 id="recommendationTitle"></h3>
+                <p id="recommendationText" class="recommendation-text"></p>
+
+                <button class="button contact-button" onclick="contactFCL()">
+                    GET FREE CONSULTATION
+                </button>
+            </div>
+            <p class="quiz-footer">
+                *This recommendation is for informational purposes only. For precise requirements, always consult with a certified electrician and our FCL experts.
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4; // Including the results step
+
+        function showStep(stepNumber) {
+            // Hide all steps and remove active class
+            document.querySelectorAll('.quiz-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            // Show the requested step and add active class
+            const targetStep = document.getElementById('step' + stepNumber);
+            if (targetStep) {
+                targetStep.classList.add('active');
+                currentStep = stepNumber;
+            }
+        }
+
+        function nextStep(targetStepNumber) {
+            if (currentStep === 2) {
+                const selectedBuildingType = document.querySelector('input[name="buildingType"]:checked');
+                if (!selectedBuildingType) {
+                    alert('Please select a building type before proceeding.');
+                    return;
+                }
+            } else if (currentStep === 3) {
+                const selectedConcern = document.querySelector('input[name="concern"]:checked');
+                if (!selectedConcern) {
+                    alert('Please select your primary concern before getting your recommendation.');
+                    return;
+                }
+                // If we are moving to the results page, generate the recommendation
+                generateRecommendation();
+            }
+            showStep(targetStepNumber);
+        }
+
+        function generateRecommendation() {
+            const buildingType = document.querySelector('input[name="buildingType"]:checked')?.value;
+            const concern = document.querySelector('input[name="concern"]:checked')?.value;
+
+            const recommendationTitle = document.getElementById('recommendationTitle');
+            const recommendationText = document.getElementById('recommendationText');
+
+            let title = "Your Ideal FCL Wiring Solution!";
+            let text = "Based on your choices, FCL Wire & Cable has the perfect solution for you. We recommend exploring our range of wires that offer ";
+
+            if (buildingType === "residential") {
+                if (concern === "safety_durability") {
+                    title = "For Your Safe & Durable Home, We Recommend:";
+                    text += "superior fire resistance and robust insulation, ensuring maximum safety and long-term durability for your family's peace of mind. Look for our Flame Retardant Low Smoke (FRLS) or Halogen-Free Flame Retardant (HFFR) wires.";
+                } else if (concern === "energy_efficiency") {
+                    title = "For Energy-Efficient Homes, We Recommend:";
+                    text += "high-grade copper conductors and optimal insulation to minimize energy loss, helping you save on electricity bills. Our low-resistance wires are designed for efficiency.";
+                } else if (concern === "cost_effectiveness") {
+                    title = "Smart Wiring for Your Budget-Friendly Home:";
+                    text += "reliable performance at an economical price point, without compromising on essential safety standards. Our standard residential wiring solutions offer great value.";
+                } else if (concern === "future_proofing") {
+                    title = "Future-Ready Wiring for Your Smart Home:";
+                    text += "advanced wiring solutions that support higher data transfer rates and multiple smart devices, ensuring your home is ready for tomorrow's technology. Consider our high-performance data cables and robust power wires.";
+                } else {
+                     title = "FCL Standard Residential Wire Recommendation:";
+                     text += "our versatile and reliable standard housing wires, perfect for all general residential applications, ensuring safety and performance.";
+                }
+            } else if (buildingType === "commercial") {
+                if (concern === "safety_durability") {
+                    title = "Robust Wiring for Commercial Reliability:";
+                    text += "heavy-duty, fire-resistant wires with enhanced insulation, crucial for high-traffic commercial environments where safety and continuous operation are paramount. Our FRLS and FRLSH wires are ideal.";
+                } else if (concern === "energy_efficiency") {
+                    title = "Efficient Wiring for Commercial Savings:";
+                    text += "wires designed for high load capacity and minimal energy dissipation, helping businesses reduce operational costs and meet energy regulations. Explore our XLPE insulated cables.";
+                } else if (concern === "cost_effectiveness") {
+                     title = "Value-Driven Commercial Wiring Solutions:";
+                     text += "a balance of performance and cost-efficiency for your commercial projects, providing dependable wiring that fits your budget without cutting corners on safety.";
+                } else if (concern === "future_proofing") {
+                     title = "Scalable Wiring for Modern Businesses:";
+                     text += "flexible and expandable wiring systems that can adapt to evolving technological needs and future office layouts, supporting advanced IT infrastructure and smart building systems.";
+                } else {
+                    title = "FCL General Commercial Wiring Recommendation:";
+                    text += "our versatile range of wires suitable for diverse commercial applications, balancing safety, durability, and cost-efficiency for your business needs.";
+                }
+            } else if (buildingType === "industrial") {
+                 if (concern === "safety_durability") {
+                    title = "Industrial Strength for Extreme Safety:";
+                    text += "highly robust wires designed to withstand harsh industrial conditions, extreme temperatures, and chemical exposure, ensuring maximum safety and operational uptime. Our armored and specialized industrial cables are built for this.";
+                } else if (concern === "energy_efficiency") {
+                    title = "Optimized Industrial Power Efficiency:";
+                    text += "high-capacity cables with superior conductivity to minimize power loss in heavy machinery and industrial processes, contributing to significant energy savings. Our high-voltage and low-loss cables are key.";
+                } else if (concern === "cost_effectiveness") {
+                     title = "Economical Industrial Wiring Solutions:";
+                     text += "durable and high-performing wires that offer long-term reliability and minimize maintenance costs, providing excellent value for industrial installations.";
+                } else if (concern === "future_proofing") {
+                     title = "Adaptable Wiring for Industry 4.0:";
+                     text += "scalable and modular wiring systems that can integrate seamlessly with automation, IoT, and smart factory technologies, preparing your facility for the next generation of industrial operations.";
+                } else {
+                    title = "FCL Robust Industrial Wire Recommendation:";
+                    text += "our heavy-duty and resilient wires, engineered to meet the demanding requirements of industrial environments, providing unmatched performance and safety.";
+                }
+            }
+            else { // 'Others' or general fallback
+                title = "FCL General Wiring Recommendation:";
+                text += "our comprehensive range of high-quality wires suitable for various general and specialized applications. We recommend our versatile FRLS wires for enhanced safety in any setting.";
+            }
+
+            recommendationTitle.textContent = title;
+            recommendationText.textContent = text + " Contact our experts today for a free consultation tailored to your specific project needs!";
+        }
+
+        function contactFCL() {
+            // In a real scenario, this would redirect to a contact page or open a modal
+            alert("Redirecting to FCL Wire & Cable Contact Us page for a FREE Consultation! (Demo Action)");
+            // window.location.href = "your_contact_page_url_here.html"; // Replace with your actual contact page URL
+        }
+
+        // Initialize quiz to first step on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            showStep(1);
+        });
+    </script>
+<img src="fotter.png" style="width:100%"/>

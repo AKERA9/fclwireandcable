@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCL Wire & Cable</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --header-height-desktop: 155px;
+            --header-height-mobile: 100px;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 150px;
+            background-color: #f4f4f4;
+        }
+        .site-header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: #ffffff; z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 100px;
+        }
+        .logo { font-weight: bold; font-size: 24px; letter-spacing: 2px; }
+        .search-container {
+            position: relative;
+			flex-grow: 1;
+			margin: 0 18px;
+			display: flex;
+			background-color: #f2f2f2;
+			right: 3px;
+        }
+        #search-input {
+            flex-grow: 1;
+            padding: 11px 15px;
+            border: none;
+            background-color: transparent;
+            outline: none;
+        }
+        #search-button {
+            background: transparent;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+            color: #555;
+            font-size: 16px;
+        }
+        #search-results {
+            display: none; position: absolute; top: 110%; left: 0; width: 100%;
+            background-color: white; border: 1px solid #ddd; border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-height: 300px; overflow-y: auto;
+            z-index: 1001;
+        }
+        .suggestion-item {
+            display: block;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background-color: #f5f5f5;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .suggestion-item mark {
+            background-color: #ffe082;
+            font-weight: bold;
+        }
+        .highlight-scroll {
+            transition: background-color 0.3s ease-in-out;
+            background-color: #fffde7 !important;
+            border-radius: 5px;
+        }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .header-actions i { font-size: 14px; cursor: pointer; }
+        .claim-button { background-color: #E31E24;color: #fff;padding: 10px 40px;border:1px solid #e31e24; }
+        .claim-button:hover { background-color: white;color: #e31e24;padding: 10px 40px;border:1px solid #e31e24; }
+        .main-nav {
+            display: flex; justify-content: center; align-items: center;
+            padding: 0 30px;
+        }
+        .main-nav ul { list-style: none; margin: 0; padding: 0; white-space: nowrap; font-size: .875rem; letter-spacing: 2.1px; line-height: 1.25rem; display: flex ; font-family: sans-serif;}
+        .main-nav ul li { position: relative; }
+        .main-nav ul li > a.nav-link {
+            display: block; padding: 15px 30px; text-decoration: none;
+            color: #333333bf; font-weight: bold; font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        .main-nav ul li:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            height: 16px; 
+            width: 1px;
+            background-color: #eee;
+        }
+
+		.scrolling-bar {
+		  background-color: #e31e24;
+		  padding: 5px 0px 5px 0px;
+		  overflow: hidden;
+		  font-weight:bold;
+		  white-space: nowrap;
+		  text-transform: uppercase;
+		  font-family: Arial, sans-serif;
+		}		
+        .main-nav ul li a.highlight, .main-nav ul li a.sale { color: #e31e24; font-weight: bold; }
+		
+        .main-nav ul li:hover > a.nav-link {
+            color: #E31E24;
+        }
+		.mega-menu {
+			display: block;
+			opacity: 0;
+			visibility: hidden;
+			transform: translateY(10px);
+			transition: all 0.3s ease;
+			position: absolute;
+			top: calc(100% - 1px);
+			right: 0;
+			left: auto;
+			width: min-content;
+			background-color: white;
+			padding: 15px 12px;
+			box-sizing: border-box;
+			box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+			z-index: 999;
+			pointer-events: none; /* Prevent accidental hover before animation ends */
+		}
+		.main-nav ul li.has-children:hover .mega-menu {
+			opacity: 1;
+			visibility: visible;
+			transform: translateY(0);
+			pointer-events: auto;
+		}
+		.mega-menu-content {
+			display: block; /* Change from grid to block for simple column*/
+		}
+
+		.mega-menu-column h3 {
+			font-size: 14px;
+			margin-top: 0;
+			text-transform: uppercase;
+			margin-bottom: 10px;
+		}
+
+		.mega-menu-column ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: block;
+		}
+
+		.mega-menu-column ul li a {
+			border-bottom: none;
+			padding: 8px 0;
+			letter-spacing: normal;
+			font-size: initial;
+			color: #555;
+			text-decoration: none;
+			line-height: 1.5;
+			display: block;
+		}
+		.mega-menu-column ul li a:hover {
+			border-bottom: none;
+			padding: 8px 0;
+			letter-spacing: normal;
+			font-size: initial;
+			color: black;
+			text-decoration: none;
+			line-height: 1.5;
+			display: block;
+		}	
+        .ticker-bar { background-color: #E31E24;color: #fff;text-align: center;font-size: 13px; }
+        
+        /* Mobile Specific Styles */
+        .main-nav-mobile, .mobile-header, .menu-overlay, .dropdown-toggle, .close-menu-btn, .sub-menu {
+            display: none;
+        }
+            #mobile-search-container {
+                display:none;
+            }
+			
+        /* Media Query for screens up to 1330px and greater than 1000px */
+        @media (max-width: 1330px) and (min-width: 1001px) {
+            .header-top {
+                padding: 15px 50px; 
+            }
+            .main-nav {
+                padding: 0 15px; 
+            }
+            .main-nav ul li > a.nav-link {
+                font-size: 13.5px; /* Slightly reduced font size*/
+                padding: 15px 20px; 
+            }
+            .claim-button {
+                padding: 10px 30px; 
+                font-size: 13px; 
+            }
+        }
+        /* Media Query for screens up to 1200px and greater than 1000px */
+        @media (max-width: 1200px) and (min-width: 1001px) {
+            .header-top {
+                padding: 15px 30px; 
+            }
+            .main-nav {
+                padding: 0 10px; 
+            }
+            .main-nav ul li > a.nav-link {
+                font-size: 13px; 
+                padding: 15px 18px; 
+            }
+            .claim-button {
+                padding: 10px 25px; 
+                font-size: 12.5px; 
+            }
+        }
+        /* Media Query for screens up to 1000px and greater than 800px */
+        @media (max-width: 1000px) and (min-width: 801px) {
+            .header-top {
+                padding: 15px 20px; 
+            }
+            .main-nav {
+                padding: 0 5px; 
+            }
+            .main-nav ul li > a.nav-link {
+                font-size: 12px; 
+                padding: 15px 10px; 
+                letter-spacing: 1.5px;
+            }
+            .header-actions {
+                gap: 10px;
+            }
+            .claim-button {
+                padding: 8px 15px; 
+                font-size: 12px; 
+            }
+            .about, .user {
+                padding: 8px 12px;
+            }
+        }
+
+        /* Media Query for screens up to 800px and greater than 752px */
+        @media (max-width: 800px) and (min-width: 753px) {
+            .header-top {
+                padding: 15px 10px; 
+            }
+            .main-nav {
+                padding: 0 0px; 
+            }
+            .main-nav ul li > a.nav-link {
+                font-size: 11px; 
+                padding: 15px 8px; 
+                letter-spacing: 1px;
+            }
+            .header-actions {
+                gap: 5px;
+            }
+            .claim-button {
+                padding: 6px 10px; 
+                font-size: 11px; 
+            }
+            .about, .user {
+                padding: 6px 10px;
+            }
+            .logo img {
+                width: 80px; /* Make logo slightly smaller */
+            }
+        }
+
+
+        @media (max-width: 752px) {
+            body { padding-top: var(--header-height-mobile); }
+            .header-top, .main-nav { display: none; }
+
+            .mobile-header {
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center;
+                padding: 15px; 
+                height: 60px;
+                position: relative;
+                z-index: 100;
+            }
+            .mobile-header .logo { font-size: 20px; } 
+            .mobile-header .left-icons { display: flex; align-items: center; gap: 15px; }
+            .mobile-header .left-icons i { font-size: 24px; }
+            .mobile-header .right-button { display: flex; align-items: center; }
+            .mobile-header .get-app-btn { background-color: #f0f8ff00;
+            color: #fff;
+            padding: 5px 10px;
+            font-weight: bold;
+            border: none; }
+
+            #mobile-search-container {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #ffffff;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                padding: 0 15px;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+                z-index: 90;
+            }
+            .scrolling-bar{
+                background-color: #e31e24;
+                padding: 3px 0px 3px 0px;
+                overflow: hidden;
+                font-weight: bold;
+                white-space: nowrap;
+                text-transform: uppercase;
+                font-family: Arial, sans-serif;
+            }
+
+            #mobile-search-container.active {
+                max-height: 250px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                overflow: visible;
+            }
+
+            #mobile-search-input {
+                width: 100%;
+                padding: 8px 10px;
+                border:none;
+                border-radius: 5px;
+                outline: none;
+                margin-bottom: 5px;
+            }
+
+            #mobile-search-results {
+                position: relative;
+                top: auto;
+                left: auto;
+                width: 100%;
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                max-height: 150px;
+                overflow-y: auto;
+                z-index: 1002;
+            }
+
+            .main-nav-mobile {
+                display: block; position: fixed; top: 0; left: -100%;
+                width: 80%; height: 100%; background: white;
+                overflow-y: auto; transition: left 0.4s ease;
+                padding: 20px; box-sizing: border-box; z-index: 1001;
+            }
+            .main-nav-mobile.mobile-active { left: 0; }
+            .main-nav-mobile ul { list-style: none; margin: 0; padding: 0; }
+            .main-nav-mobile ul li { border-bottom: 1px solid #eee; }
+            .main-nav-mobile ul li .menu-item-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+            .main-nav-mobile ul li a { text-decoration: none; color: #333; display: block; padding: 15px; }
+            .dropdown-toggle { display: block; cursor: pointer; padding: 15px; font-size: 18px; }
+            .sub-menu { display: block; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; list-style: none; padding-left: 20px; background: #f9f9f9; }
+            .sub-menu.open { max-height: 500px; }
+            .sub-menu a { font-size: 14px !important; font-weight: normal !important; }
+            .menu-overlay.active { display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+            .close-menu-btn { display: block; position: absolute; top: 10px; right: 15px; font-size: 28px; background: none; border: none; }
+        }
+        .about, .user{
+            border:1px solid grey;
+            padding:10px 16px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <header class="site-header">
+        <div class="header-top">
+            <div class="logo"><a href="index.html"><img src="img/logo.png" style="width:95px;"/></a></div>
+            <div class="search-container" id="desktop-search-container">
+                <input type="text" id="search-input" placeholder="SEARCH WHAT YOU NEED..."/>
+                <div id="search-results"></div>
+            </div>
+            <div class="header-actions">
+                <div class="about"><img src="img/india.jpg" style="width: 14px;margin-right: 4px;margin-top: -3px;"/>INR <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="about"><i class="fa-regular fa-clock"></i></div>
+                <div class="user"><i class="fa-regular fa-user"></i></div>
+                <button class="claim-button cart">SELCTED CART ITEM <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+        </div>
+        <nav class="main-nav" id="desktop-main-nav">
+            <ul>
+                <li><a href="#" class="nav-link highlight">WHAT'S NEW</a></li>
+                <li><a href="#" class="nav-link">AMBASSADOR</a></li>
+                <li><a href="#" class="nav-link">CAREER</a></li>
+                <li><a href="Comparison.html" class="nav-link">COMPARISON</a></li>
+                <li><a href="partner.html" class="nav-link">BECAME A PARTNER</a></li>
+                <li><a href="about.html" class="nav-link">ABOUT</a></li>
+                <li><a href="hot.html" class="nav-link">🔥 250<span style="position:relative;bottom:8px;font-size:12px;">o</span>C</a></li>
+                <li><a href="blogs.html" class="nav-link">BLOGS</a></li>
+                <li class="has-children"><a href="#" class="nav-link sale">MORE</a>
+				    <div class="mega-menu">
+                        <div class="mega-menu-content">
+                            <div class="mega-menu-column">
+								<ul><li><a href="quiz.html">Quiz</a></li>
+									<li><a href="policy.html">Posh Policies</a></li>
+									<li><a href="#">Compare Wire</a></li>
+								</ul>
+							</div>
+                        </div>
+                    </div>
+				</li>
+            </ul>
+        </nav>
+        
+        <div class="mobile-header">
+            <div class="left-icons">
+                <img src="img/menu.png"  id="hamburger-menu" style="width: 25px;"/>
+                <img src="img/search.png" id="mobile-search-icon" style="width: 23px;"/>
+            </div>
+            <div class="logo"><a href="index.php"><img src="img/logo.png" style="width:97px;"></a></div>
+            <div class="right-button"><button class="get-app-btn claim-button"><img src="img/sup.png" style="width: 30px;"/></div>
+        </div>
+        <div class="search-container" id="mobile-search-container">
+            <input type="text" id="mobile-search-input" placeholder="SEARCH WHAT YOU NEED..."/>
+            <div id="mobile-search-results"></div>
+        </div>
+        
+        <nav class="main-nav-mobile" id="main-nav-menu">
+            <button class="close-menu-btn" id="close-btn">&times;</button>
+            <ul id="mobile-menu-list">
+                </ul>
+        </nav>
+
+        <div class="ticker-bar">
+		<div class="scrolling-bar">
+  <div class="scrolling-track">
+    <span>#1 SHORT CIRCUIT PROOF WIRES</span>
+    <span>99.97% PURE COPPER</span>
+    <span>REGISTERED DESIGN PACKAGING</span>
+    <span>FIRE PROTECTION UP TO 250<span style="position: relative; top: 2px;padding: 2px;">°</span> C</span>
+    <span>PATENTED TECHNOLOGY</span>
+    <span>#1 SHORT CIRCUIT PROOF WIRES</span>
+    <span>99.97% PURE COPPER</span>
+    <span>REGISTERED DESIGN PACKAGING</span>
+    <span>FIRE PROTECTION UP TO 250<span style="position: relative; top: 2px;padding: 2px;">°</span> C</span>
+    <span>PATENTED TECHNOLOGY</span>
+    <span>#1 SHORT CIRCUIT PROOF WIRES</span>
+    <span>99.97% PURE COPPER</span>
+    <span>REGISTERED DESIGN PACKAGING</span>
+    <span>FIRE PROTECTION UP TO 250<span style="position: relative; top: 2px;padding: 2px;">°</span> C</span>
+    <span>PATENTED TECHNOLOGY</span>
+  </div>
+</div>
+
+<style>
+
+.scrolling-track {
+  display: inline-block;
+  animation: scroll-left 50s linear infinite;
+}
+
+.scrolling-track span {
+display: inline-block;
+    color: white;
+    font-size: 12px;
+    padding: 0 13px;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+</style>
+</div>
+    </header>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Mobile Menu Functionality ---
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const mainNavMenu = document.getElementById('main-nav-menu');
+            const closeBtn = document.getElementById('close-btn');
+            const overlay = document.getElementById('menu-overlay');
+            const mobileMenuList = document.getElementById('mobile-menu-list');
+            const desktopMainNav = document.getElementById('desktop-main-nav');
+
+            function openMenu() { mainNavMenu.classList.add('mobile-active'); overlay.classList.add('active'); }
+            function closeMenu() { mainNavMenu.classList.remove('mobile-active'); overlay.classList.remove('active'); }
+            
+            if(hamburgerMenu) hamburgerMenu.addEventListener('click', openMenu);
+            if(closeBtn) closeBtn.addEventListener('click', closeMenu);
+            if(overlay) overlay.addEventListener('click', closeMenu);
+
+            // Function to dynamically create mobile menu content from desktop menu
+            function createMobileMenuContent() {
+                mobileMenuList.innerHTML = ''; // Clear existing mobile menu
+                
+                // Clone all top-level list items from the desktop menu
+                desktopMainNav.querySelectorAll('ul > li').forEach(desktopLi => {
+                    const mobileLi = document.createElement('li');
+                    
+                    // Clone the link directly
+                    const desktopLink = desktopLi.querySelector('.nav-link');
+                    if (desktopLink) {
+                        const menuWrapper = document.createElement('div');
+                        menuWrapper.className = 'menu-item-wrapper';
+                        
+                        const linkClone = desktopLink.cloneNode(true);
+                        menuWrapper.appendChild(linkClone);
+                        mobileLi.appendChild(menuWrapper);
+                    }
+
+                    // Handle has-children / mega-menu for mobile
+                    if (desktopLi.classList.contains('has-children')) {
+                        const dropdownToggle = document.createElement('span');
+                        dropdownToggle.className = 'dropdown-toggle';
+                        dropdownToggle.textContent = '+';
+                        mobileLi.querySelector('.menu-item-wrapper').appendChild(dropdownToggle);
+
+                        const subMenu = document.createElement('ul');
+                        subMenu.className = 'sub-menu';
+
+                        const megaMenuContent = desktopLi.querySelector('.mega-menu-content');
+                        if (megaMenuContent) {
+                            // Loop through each column in the mega-menu
+                            megaMenuContent.querySelectorAll('.mega-menu-column').forEach(column => {
+                                column.querySelectorAll('ul li a').forEach(itemLink => {
+                                    const subMenuItem = document.createElement('li');
+                                    const link = itemLink.cloneNode(true);
+                                    link.removeAttribute('style'); // Remove inline styles if any
+                                    subMenuItem.appendChild(link);
+                                    subMenu.appendChild(subMenuItem);
+                                });
+                            });
+                        }
+                        mobileLi.appendChild(subMenu);
+                    }
+                    mobileMenuList.appendChild(mobileLi);
+                });
+
+                // Attach dropdown toggle listeners to newly created elements
+                attachDropdownListeners();
+            }
+
+            function attachDropdownListeners() {
+                const dropdownToggles = document.querySelectorAll('#mobile-menu-list .dropdown-toggle');
+                dropdownToggles.forEach(toggle => {
+                    toggle.removeEventListener('click', toggleDropdown); // Prevent duplicate listeners
+                    toggle.addEventListener('click', toggleDropdown);
+                });
+            }
+
+            function toggleDropdown() {
+                const subMenu = this.parentElement.nextElementSibling;
+                if (subMenu) {
+                    subMenu.classList.toggle('open');
+                    this.textContent = subMenu.classList.contains('open') ? '−' : '+';
+                }
+            }
+
+            // --- Mobile Search Functionality ---
+            const mobileSearchIcon = document.getElementById('mobile-search-icon');
+            const mobileSearchContainer = document.getElementById('mobile-search-container');
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            const mobileSearchResults = document.getElementById('mobile-search-results');
+
+            if (mobileSearchIcon) {
+                mobileSearchIcon.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent document click from immediately closing it
+                    mobileSearchContainer.classList.toggle('active');
+                    if (mobileSearchContainer.classList.contains('active')) {
+                        mobileSearchInput.focus();
+                    } else {
+                        mobileSearchResults.style.display = 'none';
+                        mobileSearchInput.value = '';
+                    }
+                });
+            }
+
+            // --- Search Logic (Find and Suggest from Page Content) ---
+            const searchInputDesktop = document.getElementById('search-input');
+            const searchResultsDesktop = document.getElementById('search-results');
+            const pageContentElements = document.querySelector('body');
+            let pageContent = [];
+
+            function indexPage() {
+                pageContent = [];
+                pageContentElements.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, a, span, div, button').forEach(element => {
+                    if (element.textContent && element.textContent.trim().length > 0 && element.offsetParent !== null) {
+                        pageContent.push({
+                            text: element.textContent,
+                            element: element
+                        });
+                    }
+                });
+            }
+
+            function setupSearch(inputElement, resultsElement) {
+                if (inputElement) {
+                    inputElement.addEventListener('input', function() {
+                        const query = this.value.trim().toLowerCase();
+                        resultsElement.innerHTML = '';
+
+                        if (query.length < 3) {
+                            resultsElement.style.display = 'none';
+                            return;
+                        }
+
+                        const uniqueMatches = new Set();
+                        const maxSuggestions = 10;
+                        let currentSuggestions = 0;
+
+                        pageContent.forEach(item => {
+                            if (currentSuggestions >= maxSuggestions) return;
+
+                            const fullText = item.text;
+                            const lowerCaseFullText = fullText.toLowerCase();
+                            let startIndex = lowerCaseFullText.indexOf(query);
+
+                            while (startIndex !== -1 && currentSuggestions < maxSuggestions) {
+                                const beforeLength = 30;
+                                const afterLength = 50;
+
+                                let startSnippet = Math.max(0, startIndex - beforeLength);
+                                let endSnippet = Math.min(fullText.length, startIndex + query.length + afterLength);
+
+                                let snippet = fullText.substring(startSnippet, endSnippet);
+
+                                if (startSnippet > 0) {
+                                    snippet = '...' + snippet;
+                                }
+                                if (endSnippet < fullText.length) {
+                                    snippet = snippet + '...';
+                                }
+                                
+                                const highlightedSnippet = snippet.replace(new RegExp(query, 'gi'), '<mark>$&</mark>');
+
+                                if (!uniqueMatches.has(highlightedSnippet)) {
+                                    uniqueMatches.add(highlightedSnippet);
+
+                                    const suggestionElement = document.createElement('a');
+                                    suggestionElement.className = 'suggestion-item';
+                                    suggestionElement.innerHTML = highlightedSnippet;
+                                    
+                                    suggestionElement.addEventListener('click', function() {
+                                        scrollToElement(item.element);
+                                        resultsElement.style.display = 'none';
+                                        inputElement.value = '';
+                                    });
+                                    
+                                    resultsElement.appendChild(suggestionElement);
+                                    currentSuggestions++;
+                                }
+                                
+                                startIndex = lowerCaseFullText.indexOf(query, startIndex + query.length);
+                            }
+                        });
+
+                        if (resultsElement.children.length > 0) {
+                            resultsElement.style.display = 'block';
+                        } else {
+                            resultsElement.style.display = 'none';
+                        }
+                    });
+                }
+            }
+            
+            function scrollToElement(element) {
+                const headerHeight = document.querySelector('.site-header').offsetHeight;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = window.pageYOffset + elementPosition - headerHeight - 20;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+
+                element.classList.add('highlight-scroll');
+                setTimeout(() => {
+                    element.classList.remove('highlight-scroll');
+                }, 2500);
+            }
+
+            document.addEventListener('click', function(e) {
+                // Handle clicks outside desktop search
+                const desktopSearchContainer = document.getElementById('desktop-search-container');
+                if (desktopSearchContainer && !e.target.closest('#desktop-search-container')) {
+                    searchResultsDesktop.style.display = 'none';
+                }
+
+                // Handle clicks outside mobile search
+                if (mobileSearchContainer && !e.target.closest('#mobile-search-container') && !e.target.closest('#mobile-search-icon')) {
+                    if (mobileSearchContainer.classList.contains('active')) {
+                        mobileSearchContainer.classList.remove('active');
+                        mobileSearchResults.style.display = 'none';
+                        mobileSearchInput.value = '';
+                    }
+                }
+            });
+
+            // Initialize functions
+            createMobileMenuContent(); // Build mobile menu on load
+            indexPage(); // Index page content for search
+            setupSearch(searchInputDesktop, searchResultsDesktop); // Setup desktop search
+            setupSearch(mobileSearchInput, mobileSearchResults); // Setup mobile search - THIS LINE WAS MISSING/COMMENTED OUT
+            // Rebuild mobile menu on resize if layout changes significantly
+            window.addEventListener('resize', () => {
+                if (window.innerWidth <= 752) {
+                    createMobileMenuContent();
+                }
+            });
+        });
+    </script>
+ <style>
+
+    .comparison-container {
+      display: flex;
+      border-radius: 16px;
+	  padding: 26px;
+      overflow: hidden;
+    }
+
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      width: 200px;
+    }
+
+    .left-column .label,
+    .left-column .product-card {
+      padding: 20px 10px;
+      font-weight: bold;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      margin: 5px;
+      background-color:#f7d348fa;
+    }
+
+    .product-column {
+      flex: 1;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .product-card {
+      padding: 10px;	  
+      text-align: center;
+      background-color: #EAEAEA;
+      width: calc(100% - 10px);
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 5px;
+      margin: 5px;
+    }
+
+    .product-card img {
+      max-height: 50px;
+    }
+
+    .product-card span {
+      font-weight: bold;
+    }
+
+    .data-row {
+      padding: 10px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: calc(100% - 10px);
+      font-size: 14px;
+      line-height: 1.4;
+      padding: 0 10px;
+      border-radius: 5px;
+      margin: 5px;
+      background-color: #F4F4F4;
+    }
+
+    .data-row img {
+      height: 24px;
+      margin: 0 5px;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #000;
+    }
+
+    .label {
+      border-radius: 5px !important;
+    }
+	.console{
+		display: flex;
+		position: relative;
+		font-size: xxx-large;
+		max-width: 100%;
+		min-width: auto;
+		align-self: stretch;
+		flex-basis: auto;
+		min-height: auto;
+		align-items: center;
+		flex-shrink: 0;
+		color:white;
+		padding-top: 75px;
+		padding-bottom: 75px;
+		justify-content: center;
+		background-color:  black;
+		background-image: none;
+		font-weight: bold;
+	}
+  </style>
+ <div class="console">
+ KNOW YOUR WIRE
+ </div>
+<br>
+<img src="com.png" style="width:100%"/>
+<img src="comp.png" style="width:100%"/>
+<img src="fotter.png" style="width:100%"/>
